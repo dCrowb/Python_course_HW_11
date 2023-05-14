@@ -9,14 +9,15 @@ from commands import (
     remove_phone,
     replace_phone,
     change_contact,
-    show_contact
+    show_contact,
+    add_birthday
 )
 
 
 def command_call(command: str, arguments: argparse):
     print(command)
     if command == 'add':
-        result = add_contact(arguments.name, arguments.phone)
+        result = add_contact(arguments.name, arguments.phone, arguments.birthday)
     elif command == 'change':
         if arguments.delete_phone:
             result = remove_phone(arguments.name, arguments.delete_phone)
@@ -24,12 +25,15 @@ def command_call(command: str, arguments: argparse):
             result = replace_phone(arguments.name, arguments.phone, arguments.replace_phone)
         elif arguments.phone and not arguments.replace_phone:
             result = change_contact(arguments.name, arguments.phone)
+        elif arguments.birthday:
+            result = add_birthday(arguments.name, arguments.birthday)
     elif command == 'show':
         if arguments.name:
             result = show_contact(arguments.name, 'name')
         elif arguments.phone:
             result = show_contact(arguments.phone, 'phone')
-            
+    else:
+        result = 'Wrong command! Try again'            
     return result
 
     
@@ -41,6 +45,7 @@ def build_parser(arguments: str):
     parser.add_argument("-p", dest="phone")
     parser.add_argument("-r", dest="replace_phone")
     parser.add_argument("-d", dest="delete_phone")
+    parser.add_argument("-b", dest="birthday")
     args = parser.parse_args(arguments.split())
     return args
 
@@ -61,6 +66,7 @@ def main():
         add -n [name] -p [phone] - add new contact.
         change -n [name] -p [phone]- change existing contact.
         change -n [name] -d [phone]- remove existing phone.
+        change -n [name] -b [birthday]- add birthday.
         show -n [name] - show number or -p [phone] - show name.
         show_all - show all stored contacts and their numbers.
         To terminate the program, enter one of the following commands:
@@ -81,12 +87,6 @@ def main():
         elif not arguments:
             print('Wrong command! Try again with arguments!')
         elif command in COMANDS_WITH_ARGUMENTS:
-            if arguments.phone and not verifications.check_phone_number(arguments.phone):
-                continue
-            if arguments.replace_phone and not verifications.check_phone_number(arguments.replace_phone):
-                continue
-            if arguments.delete_phone and not verifications.check_phone_number(arguments.delete_phone):
-                continue
             print(command_call(command, arguments))
 
         else:

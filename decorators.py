@@ -1,4 +1,6 @@
-import classes
+class PhoneError(Exception):
+    pass
+
 
 def input_error(func):
     def inner(*args):
@@ -7,9 +9,8 @@ def input_error(func):
             return result
         except SystemExit:
             print('Incorect command')
-        except classes.PhoneError:
-            print('Incorrect phone number')
-            return None
+        except PhoneError:
+            return 'Incorrect phone number'
         # except AttributeError:
         #     print('Incorect argument!')
         except ValueError:
