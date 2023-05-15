@@ -10,12 +10,13 @@ from commands import (
     replace_phone,
     change_contact,
     show_contact,
-    add_birthday
+    change_birthday,
+    days_to_birthday,
+    show_contacts_page
 )
 
 
 def command_call(command: str, arguments: argparse):
-    print(command)
     if command == 'add':
         result = add_contact(arguments.name, arguments.phone, arguments.birthday)
     elif command == 'change':
@@ -26,12 +27,16 @@ def command_call(command: str, arguments: argparse):
         elif arguments.phone and not arguments.replace_phone:
             result = change_contact(arguments.name, arguments.phone)
         elif arguments.birthday:
-            result = add_birthday(arguments.name, arguments.birthday)
+            result = change_birthday(arguments.name, arguments.birthday)
     elif command == 'show':
-        if arguments.name:
+        if arguments.name and arguments.birthday == 'list':
+            result = days_to_birthday(arguments.name)
+        elif arguments.name:
             result = show_contact(arguments.name, 'name')
         elif arguments.phone:
             result = show_contact(arguments.phone, 'phone')
+        elif arguments.all == 'page':
+            result = show_contacts_page()
     else:
         result = 'Wrong command! Try again'            
     return result
@@ -46,6 +51,7 @@ def build_parser(arguments: str):
     parser.add_argument("-r", dest="replace_phone")
     parser.add_argument("-d", dest="delete_phone")
     parser.add_argument("-b", dest="birthday")
+    parser.add_argument("-a", dest="all")
     args = parser.parse_args(arguments.split())
     return args
 
@@ -63,11 +69,13 @@ def command_parser(user_input: str):
 
 def main():
     '''---------------------------
-        add -n [name] -p [phone] - add new contact.
+        add -n [name] (optional: -p [phone] -b [birthday]) - add new contact.
         change -n [name] -p [phone]- change existing contact.
         change -n [name] -d [phone]- remove existing phone.
-        change -n [name] -b [birthday]- add birthday.
+        change -n [name] -b [birthday]- add birthday in format dd.mm.yyyy
         show -n [name] - show number or -p [phone] - show name.
+        show -n -b list - show count days to the next birthday
+        show -a page - show 5 contacts per page
         show_all - show all stored contacts and their numbers.
         To terminate the program, enter one of the following commands:
         good_bye

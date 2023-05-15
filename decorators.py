@@ -2,6 +2,10 @@ class PhoneError(Exception):
     pass
 
 
+class DateError(Exception):
+    pass
+
+
 def input_error(func):
     def inner(*args):
         try:
@@ -19,6 +23,18 @@ def input_error(func):
             print('User doesn`t exist')
         except IndexError:
             print('Enter user name')
-        except UnboundLocalError:
-            print('Try again')
+        # except UnboundLocalError:
+        #     print('Try again')
+    return inner
+
+
+def datatime_error(func):
+    def inner(*args):
+        try:
+            result = func(*args)
+            return result
+        except ValueError:
+            print('Incorrect birthday! Must be dd.mm.yyyy')
+        except DateError:
+            print('This person is not yet born!')
     return inner

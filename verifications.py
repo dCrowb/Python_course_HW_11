@@ -1,4 +1,5 @@
 import re
+import datetime
 import decorators
 
 
@@ -13,3 +14,15 @@ def check_phone_number(phone: str):
         return phone
     else:
         raise decorators.PhoneError
+  
+    
+@decorators.datatime_error
+def check_birthday(birthday: str):
+    datetime_object = datetime.datetime.strptime(birthday, '%d.%m.%Y').date()
+    if datetime.datetime.now().date() <= datetime_object:
+        raise decorators.DateError
+    return datetime_object
+
+
+if __name__ == '__main__':
+    print(check_birthday('14.05.2023'))

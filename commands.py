@@ -18,8 +18,8 @@ def add_contact(name: str, phone, birthday):
     if birthday:
         birthday_obj = classes.Birthday()
         birthday_obj.value = birthday
-        if phone_obj.value == 'Incorrect birthday':
-            return 'Incorrect birthday'
+        if not birthday_obj.value:
+            return 'Incorrect birthday!'
         record.add_birthday(birthday_obj)
         result += f' and birthday: {birthday}!'
     classes.contact_book.add_record(record)
@@ -99,9 +99,67 @@ def greeting_user():
 def show_all_contacts():
     result = ''
     for key, value in classes.contact_book.data.items():
-        result += f'Name: {key:<12}| Phone: {value.show_all_pnone()}\n' 
+        result += f'Name: {key:<5} | {value.show_all_data()}' 
     return result
 
 
-def add_birthday(birthday: str):
-    pass
+def change_birthday(name: str, birthday: str):
+    if name not in classes.contact_book.data.keys():
+        result = f'Contact {name} not found in Address book!'
+        return result
+    elif name in classes.contact_book.data:
+        birthday_obj = classes.Birthday()
+        birthday_obj.value = birthday
+        if not birthday_obj.value:
+            return 'Incorrect birthday!'
+        classes.contact_book.data[name].add_birthday(birthday_obj)
+        result = f'Contact {name} has been added phone: {birthday}!'
+    return result
+
+
+def days_to_birthday(name: str):
+    result = classes.contact_book.data[name].days_to_birthday()
+    return result
+
+
+@decorators.input_error
+def show_contacts_page():
+    if len(classes.contact_book.data) < 1:
+        return 'Address book is empty'
+    else:
+        page_size = 5
+        start_point = 0
+        for page in classes.contact_book.iterator(page_size):
+            for item in page:
+                result = f'Name: {item.get_name():>5} | {item.show_all_data()}'
+                print(result)
+            while True:
+                key = input('Next page - n. Quit - q:')
+                if key == 'q':
+                    return 'User stopped process'
+                elif key == 'n':
+                    break
+
+
+        
+  
+
+
+
+
+# def show_all_phones_handler(user_data: tuple, address_book: Address_Book):
+#     if address_book.recordsCount > 0:
+#         responseMessage = "Current address book contains:\n"
+#         page_size = 2
+#         start_position = 1
+#         for book in address_book.iterator(page_size):
+#             for item in enumerate(book, start_position):
+#                 position = item[0]
+#                 user_name = item[1].user_name.value
+#                 phones = ", ".join(
+#                     [field.value for field in item[1].fields if isinstance(field, Phone)])
+#                 responseMessage += f"{position}. {user_name}: {phones}\n"
+#             start_position += page_size
+#     else:
+#         responseMessage = "Current address book is empty.\n"
+#     return responseMessage
